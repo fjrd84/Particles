@@ -1,6 +1,6 @@
 var canvas = document.getElementById('snow-canvas'),
     buffer = document.createElement('canvas'),
-    bufferCtx = buffer.getContext('2d'),
+    bufferCtx = canvas.getContext('2d'),//buffer.getContext('2d'),
     width = window.innerWidth,
     height = window.innerHeight,
     counter = 0,
@@ -88,7 +88,7 @@ function updateBuffer() {
 // It paints a new frame
 function paint() {
     'use strict';
-    ctx.save();
+    //ctx.save();
     if (particles.length < 100 && counter > 50) {
         createParticles();
         counter = 0;
@@ -98,8 +98,8 @@ function paint() {
     bufferCtx.fillStyle = '#3366FF';
     bufferCtx.fillRect(0, 0, width, height);
     updateBuffer();
-    ctx.drawImage(buffer, 0, 0, width, height);
-    ctx.restore();
+    //ctx.drawImage(buffer, 0, 0, width, height);
+    //ctx.restore();
     requestAnimFrame(paint);
 }
 
