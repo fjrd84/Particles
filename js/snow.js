@@ -4,37 +4,58 @@ var canvas = document.getElementById('snow-canvas'),
     width = window.innerWidth,
     height = window.innerHeight,
     counter = 0,
-    ay = 0.1,
+    ay = 0.3,
     ax = 0,
-    wind = 4 * Math.random(),
+    wind = 4,
     particles = [],
+    bounceFactor = 0.35,
+    rubbingFactor = 0.65,
     ctx;
 
 var Particle = function () {
     'use strict';
     this.x = Math.random() * width,
         this.y = -5,
-        this.vx = Math.random() < 0.5 ? -1 * wind : wind,
+        this.vx = Math.random() < 0.5 ? -1 * wind * Math.random() : wind * Math.random(),
         this.vy = Math.random(),
         this.radius = 5,
         this.mass = 10
 };
 
+Particle.prototype.setPosition = function (x, y){
+    this.x = x;
+    this.y = y;
+};
+
+Particle.prototype.update = function () {
+    // vx and vy updates
+    if (this.y > height - this.radius * 2) {
+        this.vx = this.vx * rubbingFactor + ax;
+        this.vy = this.vy * (-1) * bounceFactor + ay;
+        this.y = height - this.radius * 2;
+    } else {
+        this.vx = this.vx + ax;
+        this.vy = this.vy + ay;
+    }
+    // x and y updates
+    if (this.x > width) {
+        this.x = 0;
+    } else if (this.x < 0) {
+        this.x = width;
+    } else {
+        this.x += this.vx;
+        this.y += this.vy;
+    }
+}
+
 Particle.prototype.draw = function () {
     'use strict';
-    this.x += this.vx;
-    this.y += this.vy;
-    if (this.x > width || this.y > height) {
-        this.x = Math.random() * width,
-            this.y = 0;
-        this.vy = 0;
-    }
-    this.vx = this.vx + ax;
-    this.vy = this.vy + ay;
+    this.update();
     bufferCtx.save();
     bufferCtx.fillStyle = 'white';
     bufferCtx.fillRect(this.x, this.y, this.radius, this.radius);
     bufferCtx.restore();
+
 };
 
 function createParticles() {
@@ -71,6 +92,17 @@ function paint() {
     ctx.restore();
 }
 
+function listenToMouse(){
+    canvas.onmousedown = function (e) {
+        for(var i = 0; i < 15; i += 1) {
+            var aParticle = new Particle();
+            aParticle.setPosition(e.clientX, e.clientY);
+            particles.push(aParticle);
+        }
+        e.preventDefault();
+    };
+}
+
 function start() {
     'use strict';
     canvas.width = width;
@@ -79,8 +111,9 @@ function start() {
     buffer.height = height;
     ctx = canvas.getContext('2d');
     createParticles();
+    listenToMouse();
     paint();
-    setInterval(paint, 30);
+    setInterval(paint, 15);
 }
 
 start();
