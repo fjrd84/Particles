@@ -12,6 +12,16 @@ var canvas = document.getElementById('snow-canvas'),
     rubbingFactor = 0.65,
     ctx;
 
+window.requestAnimFrame =
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function (callback) {
+        window.setTimeout(callback, 1000 / 60);
+    };
+
 var Particle = function () {
     'use strict';
     this.x = Math.random() * width,
@@ -90,6 +100,7 @@ function paint() {
     updateBuffer();
     ctx.drawImage(buffer, 0, 0, width, height);
     ctx.restore();
+    requestAnimFrame(paint);
 }
 
 function listenToMouse(){
@@ -113,7 +124,7 @@ function start() {
     createParticles();
     listenToMouse();
     paint();
-    setInterval(paint, 15);
+    //setInterval(paint, 15);
 }
 
 start();
